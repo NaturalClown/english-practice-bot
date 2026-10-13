@@ -21,21 +21,7 @@ aiogram — Telegram bot framework
 SQLAlchemy — database ORM
 PostgreSQL — database
 Alembic — database migrations
-Project Structure
-eng_bot/
-├── migrations/
-├── crud.py
-├── database.py
-├── eng_bot.py
-├── init.py
-├── models.py
-├── teacher_agent.py
-├── voice_to_text.py
-├── alembic.ini
-├── requirements.txt
-├── .env.example
-├── .gitignore
-└── README.md
+
 Future Improvements
 
 The ability to track progress over time will be added.
