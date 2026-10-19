@@ -110,7 +110,7 @@ class TeacherAgent():
 
                 if not match:
                     print(f"Invalid model response: {content!r}")
-                    return None, "Couldn't parse the lesson"
+                    return None, None, "Couldn't parse the lesson"
 
                 skill = match.group(1).strip()
                 lesson_text = match.group(2).strip()

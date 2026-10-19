@@ -58,9 +58,9 @@ async def get_user_skills(user_id):
 
 async def get_user_info(user_id):
     level = await get_level(user_id)
-    last_actiity = await get_last_activity(user_id)
+    last_activity = await get_last_activity(user_id)
     skills = await get_user_skills(user_id)
-    return level, last_actiity, skills
+    return level, last_activity, skills
 
 async def create_message(user_id, content, author):
     async with SessionFactory() as session: 
