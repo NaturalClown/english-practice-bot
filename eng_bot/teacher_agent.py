@@ -91,7 +91,6 @@ class TeacherAgent():
                     "content": text
                 })
 
-                system_prompt = await self.get_prompt(skills=skills, level=level)
                 response = await self.client.chat.completions.create(
                     model=model,
                     messages=messages,
