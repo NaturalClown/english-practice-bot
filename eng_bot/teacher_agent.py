@@ -20,89 +20,82 @@ class TeacherAgent():
     
     async def get_prompt(self, skills=None, level=None):
         prompt = [
-            "You are a language instructor helping a user improve "
-            "their language skills through conversational practice.",
-            """Return your answer in exactly this format:
-
-            <SKILL>
-            A short lesson title, no longer than 255 characters, This section should focus solely on the lesson topic; there is no need to write anything about the matters mentioned by the user.This section should focus solely on the lesson topic; there is no need to write anything about the matters mentioned by the user.;
-            </SKILL>
-            <LESSON>
-            The complete lesson text, including the title as its first line.
-            </LESSON>
-
-            Do not add anything before, between, or after these two blocks.
-            Do not use these marker strings anywhere else in your response.""",
-            "The lesson title must also be the first line of text, "
-            "exactly as it appears in skill.",
+            "You are a friendly English tutor. Prioritize natural, "
+            "engaging conversation and respond meaningfully to what "
+            "the user says. Ask follow-up questions when appropriate.",
             "",
-            "Follow this lesson structure:",
-            "1. Lesson title.",
-            "2. A brief, natural reply to the user's message, "
-            "addressing its topic.",
-            "3. Analysis of the user's most significant language errors. "
-            "Point out no more than two errors. If there are many, "
-            "prioritize the most important ones.",
-            "4. A short lesson explaining one important language point. "
-            "Include the correct usage and a few examples.",
-            "5. Two short exercises for practice.",
+            "Return exactly this format:",
+            "<SKILL>",
+            "A short lesson topic (max 255 characters).",
+            "</SKILL>",
+            "<LESSON>",
+            "Your complete response, starting with the lesson topic.",
+            "</LESSON>",
             "",
-            "If the user has made mistakes, base the lesson on one "
-            "of the most important mistakes.",
-            "Do not invent errors. Distinguish actual mistakes from "
-            "acceptable informal or conversational language.",
+            "Do not write anything outside these blocks or use their "
+            "markers elsewhere.",
             "",
-            "Use plain text suitable for Telegram. Avoid Markdown "
-            "headings, excessive asterisks, hashtags, and decorative "
-            "formatting. Keep the response concise and easy to read."
+            "Guidelines:",
+            "- Focus primarily on the user's message and keep the "
+            "conversation going.",
+            "- Correct up to two significant English mistakes, "
+            "briefly explaining the corrections. Do not invent errors "
+            "or criticize acceptable informal language.",
+            "- End with a short, relevant grammar lesson, preferably "
+            "based on a mistake the user made. If there are no "
+            "significant errors, choose an appropriate new topic.",
+            "- Include a few examples and two brief exercises.",
+            "- Keep everything concise and adapt it to the user's level.",
+            "- Use plain text suitable for Telegram. Avoid excessive "
+            "formatting and vocabulary lists."
         ]
 
         if level is not None:
             prompt.extend([
                 "",
-                f"Estimated proficiency level: {level}.",
-                "Adapt the explanation, examples, exercises, and "
-                "vocabulary to this level.",
-                "If the user has made no significant errors, choose "
-                "a grammar topic appropriate for this level at random.",
-                "Avoid topics already covered, using the existing "
-                "skills list if provided.",
-                "At the end of the lesson, provide 5-10 useful words "
-                "or phrases appropriate for this level, with meanings "
-                "and/or translations. Do not omit this vocabulary section."
+                f"User's English level: {level}.",
+                "Adapt your language and explanations accordingly."
             ])
 
         if skills:
             prompt.extend([
                 "",
-                "Previously covered skills and lesson topics:",
+                "Previously covered topics:",
                 *[f"- {skill}" for skill in skills],
-                "Avoid repeating these topics. Choose a different "
-                "topic unless reviewing one is genuinely necessary."
+                "Avoid repeating them unless necessary."
             ])
 
         return "\n".join(prompt)
 
-    async def get_answer(self, text, skills=None, level=None):
+    async def get_answer(self, text, skills=None, level=None, story=None):
         skill, lesson_text = None, None      
         for model in models:
 
             try:
+                messages = [
+                    {
+                        "role": "system",
+                        "content": system_prompt
+                    }
+                ]
+
+                for msg in story:
+                    messages.append({
+                        "role": "assistant" if msg.author else "user",
+                        "content": msg.content
+                    })
+
+                messages.append({
+                    "role": "user",
+                    "content": text
+                })
+
                 system_prompt = await self.get_prompt(skills=skills, level=level)
                 response = await self.client.chat.completions.create(
                     model=model,
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": system_prompt
-                        },
-                        {
-                            "role": "user",
-                            "content": f"{text}"
-                        }
-                    ],
+                    messages=messages,
                     temperature=0.3,
-                    max_tokens=5000, 
+                    max_tokens=2500, 
                 
                     #response_format={"type": "json_object"}
                 )

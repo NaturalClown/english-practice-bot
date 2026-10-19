@@ -2,7 +2,7 @@ from database import SessionFactory
 import asyncio
 from sqlalchemy import select
 from datetime import datetime, timezone
-from models import User, Skill
+from models import Message, User, Skill
 
 
 async def create_user(id, level = None):
@@ -61,3 +61,24 @@ async def get_user_info(user_id):
     last_actiity = await get_last_activity(user_id)
     skills = await get_user_skills(user_id)
     return level, last_actiity, skills
+
+async def create_message(user_id, content, author):
+    async with SessionFactory() as session: 
+        message = Message(user_id = user_id, author = author, content = content)
+        session.add(mewssage)
+        await session.commit()
+        await session.refresh(message)
+        
+
+async def get_story(user_id, limit):
+    async with SessonFactory as session:    
+        stmt = (
+            select(Message)
+            .where(Message.user_id == user_id)
+            .order_by(Message.time.desc(), Message.id.desc())
+            .limit(limit)
+        )
+        result = await session.scalars(stmt)
+        messages = list(result.all())
+
+        return messages[::-1]
