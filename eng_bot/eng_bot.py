@@ -36,7 +36,7 @@ async def get_voice(message, bot):
     voice_message = await bot.download(message.voice)
     result = await voice_to_text.recognize(voice_message)
     await message.reply(f"You said:\n{str(result)}\n\nPreparing a response may take some time.")
-    if len(str(result >= 2500)):
+    if len(str(result)) >= 2500:
         await message.reply("Too long message")
     else:
         user_level = await get_level(message.from_user.id)
@@ -54,8 +54,8 @@ async def get_voice(message, bot):
 
 @dp.message(Command("me"))
 async def get_info(message):
-    level, last_actiity, skills = await get_user_info(message.from_user.id)
-    await message.reply(f"Your level is {level}, your last actiity was at {last_actiity} and your skills are {skills}")
+    level, last_activity, skills = await get_user_info(message.from_user.id)
+    await message.reply(f"Your level is {level}, your last activity was at {last_activity} and your skills are {skills}")
     
 
 @dp.message(F.text)

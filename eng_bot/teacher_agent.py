@@ -72,6 +72,7 @@ class TeacherAgent():
         for model in models:
 
             try:
+                system_prompt = await self.get_prompt(skills=skills, level=level)
                 messages = [
                     {
                         "role": "system",
@@ -117,7 +118,7 @@ class TeacherAgent():
 
                 if not skill or not lesson_text:
                     print("Invalid skill or lesson")
-                    return None, "Couldn't parse the lesson"
+                    return None, None, "Couldn't parse the lesson"
             
                 if len(skill)>255:
                     skill = skill[:255]
@@ -125,7 +126,7 @@ class TeacherAgent():
                 return model, skill, lesson_text
           
             except Exception as e:
-                print(f"Error with model {model}, trying next")
+                print(f"Error with model {model}, trying next ({e})")
                     
         else: 
             return None, None, "Couldn't get answer"

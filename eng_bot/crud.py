@@ -65,13 +65,13 @@ async def get_user_info(user_id):
 async def create_message(user_id, content, author):
     async with SessionFactory() as session: 
         message = Message(user_id = user_id, author = author, content = content)
-        session.add(mewssage)
+        session.add(message)
         await session.commit()
         await session.refresh(message)
         
 
 async def get_story(user_id, limit):
-    async with SessonFactory as session:    
+    async with SessionFactory() as session:    
         stmt = (
             select(Message)
             .where(Message.user_id == user_id)
